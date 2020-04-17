@@ -1,5 +1,6 @@
 easybase
 -
+[![](https://jitpack.io/v/enChenging/EasyBase.svg)](https://jitpack.io/#enChenging/EasyBase)
 
 ## 用法
 
@@ -17,7 +18,7 @@ allprojects {
  在build.gradle文件中的dependencies下添加引用：
 	
 ```java
-implementation 'com.github.enChenging:easybase:1.0'
+implementation 'com.github.enChenging:EasyBase:1.0.0'
 ```
 
 
