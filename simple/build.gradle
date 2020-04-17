@@ -105,5 +105,6 @@ configurations.all {
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':easybase')
+//    implementation project(':easybase')
+    implementation 'com.github.enChenging:EasyBase:1.0.0'
 }
