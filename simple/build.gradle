@@ -1,0 +1,109 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        applicationId "com.release.simple"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        flavorDimensions "versionCode"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
+    }
+
+    signingConfigs {
+        debug {
+            keyAlias 'android'
+            keyPassword 'android'
+            storeFile file('simple.jks')
+            storePassword 'android'
+        }
+        release {
+            keyAlias 'android'
+            keyPassword 'android'
+            storeFile file('simple.jks')
+            storePassword 'android'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.release
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false //不在error情况下中断
+        disable 'MissingTranslation' //无视字符串缺少本地化的情况
+        disable 'ExtraTranslation'//无视多做了本地化的字符串
+    }
+
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+        preDexLibraries = false
+    }
+
+    productFlavors {
+        simpleApk {
+            applicationId "com.release.simple"
+            resValue "string", "name", "simple"
+//            manifestPlaceholders = [app_icon     : "@mipmap/ic_launcher",
+//                                    app_roundicon: "@mipmap/ic_launcher_round"]
+        }
+//        simpleApk2 {
+//            applicationId "com.release.simple2"
+//            resValue "string", "name", "simple2"
+//            manifestPlaceholders = [app_icon     : "@mipmap/ic_launcher",
+//                                    app_roundicon: "@mipmap/ic_launcher_round"]
+//        }
+    }
+
+    android.applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                outputFileName = "${productFlavors[0].name}_v${defaultConfig.versionName}_${buildType.name}_${releaseTime()}.apk"
+            }
+    }
+
+}
+static def releaseTime() {
+    return new Date().format("yyMMdd", TimeZone.getTimeZone("UTC"))
+}
+
+//设置最高版本保证其他aar中引用的高资源内容不会因为我们设置低版本而出错
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '28.0.0'
+            }
+        }
+    }
+}
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':easybase')
+}
