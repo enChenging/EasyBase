@@ -1,4 +1,4 @@
-easybase
+EasyBase
 -
 [![](https://jitpack.io/v/enChenging/EasyBase.svg)](https://jitpack.io/#enChenging/EasyBase)
 
